@@ -65,7 +65,7 @@ jobs:
         uses: aws-actions/amazon-ecs-render-task-definition@v1
         with:
           task-definition: lvduan-task.json
-          container-name: lvduan-container  # Ensure this matches your ECS task definition
+          container-name: lvduan-image  # Ensure this matches your ECS task definition
           image: ${{ env.image }}
 
       # Step 9: Deploy Amazon ECS task definition
