@@ -1,0 +1,33 @@
+version: '3.7'
+
+services:
+  ecs-cicd:
+    build: .
+    container_name: ecs-cicd
+    ports:
+      - 8080:8080
+    depends_on:
+      - postgres
+    environment:
+      - SPRING_DATASOURCE_URL=jdbc:postgresql://postgres:5432/postgres
+      - SPRING_DATASOURCE_USERNAME=ecs-cicd
+      - SPRING_DATASOURCE_PASSWORD=321
+
+  postgres:
+    image: postgres
+    container_name: ecs-cicd-postgres
+    restart: always
+    ports:
+      - 5432:5432
+    environment:
+      - POSTGRES_USER=ecs-cicd
+      - POSTGRES_PASSWORD=321
+      - POSTGRES_DB=postgres
+      - PGDATA=/var/lib/postgresql/data
+    volumes:
+      - postgres-data:/var/lib/postgresql/data
+      - ./database:/docker-entrypoint-initdb.d
+
+volumes:
+  postgres-data:
+  
