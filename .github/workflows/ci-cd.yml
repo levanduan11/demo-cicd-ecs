@@ -11,15 +11,18 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
+      # Step 1: Checkout code from the repository
       - name: Checkout code 
         uses: actions/checkout@v3
 
+      # Step 2: Set up JDK 21
       - name: Set up JDK 21
         uses: actions/setup-java@v3
         with:
           distribution: 'temurin'
           java-version: '21'
 
+      # Step 3: Cache Gradle packages
       - name: Cache Gradle packages
         uses: actions/cache@v3
         with:
@@ -27,6 +30,7 @@ jobs:
           key: ${{ runner.os }}-gradle-${{ hashFiles('**/*.gradle','**/gradle-wrapper.properties') }} 
           restore-keys: ${{ runner.os }}-gradle-
 
+      # Step 4: Configure AWS credentials
       - name: Configure AWS credentials
         uses: aws-actions/configure-aws-credentials@v2
         with:
@@ -34,15 +38,16 @@ jobs:
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           aws-region: ${{ secrets.AWS_REGION }} 
 
+      # Step 5: Set up Docker Buildx
       - name: Set up Docker Buildx 
         uses: docker/setup-buildx-action@v2
 
+      # Step 6: Login to Amazon ECR
       - name: Login to Amazon ECR
         id: login-ecr
         uses: aws-actions/amazon-ecr-login@v1
-        with:
-          mask-password: true
 
+      # Step 7: Build, tag, and push image to Amazon ECR
       - name: Build, tag, and push image to Amazon ECR
         id: build-image
         env:
@@ -52,20 +57,22 @@ jobs:
         run: |
           docker build -t $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG .
           docker push $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
-          echo "image=$ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG" >> $GITHUB_OUTPUT
+          echo "image=$ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG" >> $GITHUB_ENV
 
+      # Step 8: Fill in the new image ID in the Amazon ECS task definition
       - name: Fill in the new image ID in the Amazon ECS task definition
         id: task-def
         uses: aws-actions/amazon-ecs-render-task-definition@v1
         with:
           task-definition: lvduan-task.json
-          container-name: lvduan-image
-          image: ${{ steps.build-image.outputs.image }}
+          container-name: lvduan-container  # Ensure this matches your ECS task definition
+          image: ${{ env.image }}
 
+      # Step 9: Deploy Amazon ECS task definition
       - name: Deploy Amazon ECS task definition
         uses: aws-actions/amazon-ecs-deploy-task-definition@v1
         with:
-          task-definition: ${{ steps.task-def.ouputs.task-definition }}
+          task-definition: ${{ steps.task-def.outputs.task-definition }}
           service: demo-service
           cluster: lvduan-cluster
-          wait-for-service-stability: true    
+          wait-for-service-stability: true
