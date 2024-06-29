@@ -11,23 +11,23 @@ import org.springframework.web.bind.annotation.RestController;
 import com.devops.ecscicd.domain.User;
 import com.devops.ecscicd.repository.UserRepository;
 
-@RestController
-@RequestMapping(("api/v1/users"))
+//@RestController
+//@RequestMapping(("api/v1/users"))
 public class UserResource {
-    private final UserRepository userRepository;
+    // private final UserRepository userRepository;
 
-    public UserResource(UserRepository userRepository) {
-        this.userRepository = userRepository;
-    }
+    // public UserResource(UserRepository userRepository) {
+    //     this.userRepository = userRepository;
+    // }
 
-    @GetMapping
-    public List<User> getAll() {
-        return userRepository.findAll();
-    }
+    // @GetMapping
+    // public List<User> getAll() {
+    //     return userRepository.findAll();
+    // }
 
-    @GetMapping("/{id}")
-    public User getById(@PathVariable Long id) {
-        return userRepository.findById(id)
-                .orElseThrow(NoSuchElementException::new);
-    }
+    // @GetMapping("/{id}")
+    // public User getById(@PathVariable Long id) {
+    //     return userRepository.findById(id)
+    //             .orElseThrow(NoSuchElementException::new);
+    // }
 }

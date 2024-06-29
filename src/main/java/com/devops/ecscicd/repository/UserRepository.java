@@ -1,9 +1,9 @@
 package com.devops.ecscicd.repository;
 
-import org.springframework.data.jpa.repository.JpaRepository;
+// import org.springframework.data.jpa.repository.JpaRepository;
 
-import com.devops.ecscicd.domain.User;
+// import com.devops.ecscicd.domain.User;
 
-public interface UserRepository extends JpaRepository<User, Long> {
+public interface UserRepository{ //extends JpaRepository<User, Long> {
 
 }
